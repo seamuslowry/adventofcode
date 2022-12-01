@@ -1,4 +1,4 @@
-# adventofcode
+# Advent Of Code
 
 A project to track solutions to the https://adventofcode.com coding challenges.
 

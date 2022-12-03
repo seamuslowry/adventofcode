@@ -24,7 +24,7 @@ def p2():
   sacks = input.split("\n")
   badges = []
   for index in range(0, len(sacks), 3):
-    badges.append((find_badge(l[index:index+3])) for l in input)
+    badges.append(get_priority(find_badge(sacks[index:index+3])))
   return sum(badges)
 
 print(p1())

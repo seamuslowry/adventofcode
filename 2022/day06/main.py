@@ -10,8 +10,8 @@ def p1():
   return find_first_distinct_of_length(input, 4)
 
 def p2():
-  input = open("input.txt", "r")
-  return 0
+  input = open("input.txt", "r").read()
+  return find_first_distinct_of_length(input, 14)
 
 
 print(p1())

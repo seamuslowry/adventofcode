@@ -28,8 +28,17 @@ def p1():
   return sum([v for v in walk_files(input.split("\n")).values() if v < 100000])
 
 def p2():
-  input = open("input.txt", "r")
-  return 0
+  input = open("input.txt", "r").read()
+  dirs = walk_files(input.split("\n"))
+
+  unused_space = 70000000 - dirs["/"]
+  necessary_space = 30000000 - unused_space
+
+  deletion_candidates = [d for d in dirs.values() if d >= necessary_space]
+  deletion_candidates.sort()
+
+
+  return deletion_candidates[0]
 
 
 pprint.pprint(p1())

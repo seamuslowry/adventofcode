@@ -41,5 +41,5 @@ def p2():
   return deletion_candidates[0]
 
 
-pprint.pprint(p1())
+print(p1())
 print(p2())

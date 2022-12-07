@@ -1,5 +1,3 @@
-import pprint
-
 def walk_files(lines: list[str]) -> dict[str,int]:
   current_location = []
   ret = {}

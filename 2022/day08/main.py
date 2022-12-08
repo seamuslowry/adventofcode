@@ -1,3 +1,4 @@
+# long day before doing this one; definitely not up to snuff, but it works
 
 def read_input(lines: list[str]) -> list[list[int]]:
   return [list(map(int, [*line])) for line in lines]

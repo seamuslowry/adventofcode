@@ -1,5 +1,3 @@
-import pprint
-
 def noop(current_value: int, current_cycle: int) -> tuple[int, dict[int,int]]:
   return (current_value, cycles(1, current_value, current_cycle))
 
@@ -26,6 +24,16 @@ def parse_lines(lines: list[str]) -> tuple[int, dict[int,int]]:
 def sum_interesting(cycles: dict[int,int]) -> int:
   return sum(map(lambda n: cycles.get(n, 0) * n, [20, 60, 100, 140, 180, 220]))
 
+def screen(cycles: dict[int,int]) -> str:
+  val = ""
+  for index in range(0, 240):
+    cycle = index+1
+    position = index % 40
+    val += "#" if abs(position - cycles[cycle]) <= 1 else "*"
+    if not (cycle % 40):
+      val += "\n"
+  return val
+
 
 def p1():
   input = open("input.txt", "r").read().split('\n')
@@ -33,8 +41,9 @@ def p1():
   return sum_interesting(cycles)
 
 def p2():
-  input = open("input.txt", "r")
-  return 0
+  input = open("input.txt", "r").read().split('\n')
+  _, cycles = parse_lines(input)
+  return screen(cycles)
 
 
 print(p1())

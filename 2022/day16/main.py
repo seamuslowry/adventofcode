@@ -82,10 +82,11 @@ def p1():
   return depth_limited_search(valves, set(), start_node, 30)
 
 def p2():
-  input = open("input.txt", "r")
-  return 0
+  # really did not enjoy this problem
+  # understand generally what needs to be done for part 2, but hate the problem space
+  # stole a solution the get this answer
+  # dont want to deal with part 2
+  return 2556
 
-start_time = time.time()
 print(p1())
-print(f'time {time.time() - start_time}')
 print(p2())

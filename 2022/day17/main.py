@@ -1,7 +1,7 @@
 
 from dataclasses import dataclass
 
-ASSUMED_MIN_CYCLE_LENGTH = 2000 # lower this if no cycles are being found
+ASSUMED_MIN_CYCLE_LENGTH = 20 # lower this if no cycles are being found; would be weird to be lower though
 
 @dataclass(frozen=True,eq=True)
 class Location:

@@ -1,5 +1,6 @@
 
 from dataclasses import dataclass
+import time
 
 
 @dataclass(frozen=True,eq=True)
@@ -101,14 +102,15 @@ def print_simulation(falling_rock: Rock, settled: list[Rock]) -> None:
 def p1():
   input = open("input.txt", "r").read()
   directions = parse_input(input)
-  settled_rocks: list[Rock] = []
+  relevant_settled_rocks: list[Rock] = []
+  settled_count = 0
   tick = 0
-  falling_rock = create_rock(tick, determine_starting_location(settled_rocks))
+  falling_rock = create_rock(tick, determine_starting_location(relevant_settled_rocks))
 
-  while len(settled_rocks) < 2022:
+  while settled_count < 2022:
   # while tick < 2:
     # print_simulation(falling_rock, settled_rocks)
-    settled_spots: set[Location] = set(spot for rock in settled_rocks for spot in rock.spots)
+    settled_spots: set[Location] = set(spot for rock in relevant_settled_rocks for spot in rock.spots)
     jet_direction = directions[tick % len(directions)]
 
     # move from the jet
@@ -123,20 +125,22 @@ def p1():
     after_down_rows = sorted(map(lambda a:a.row, after_down_move))
     # determine if the rock is settled
     if after_down_rows[0] < 0 or not after_down_move.isdisjoint(settled_spots):
-      settled_rocks.append(falling_rock)
-      falling_rock = create_rock(len(settled_rocks), determine_starting_location(settled_rocks))
+      relevant_settled_rocks.append(falling_rock)
+      settled_count += 1
+      falling_rock = create_rock(settled_count, determine_starting_location(relevant_settled_rocks))
     else:
       falling_rock.spots = after_down_move
     tick += 1
-  print_simulation(falling_rock, settled_rocks)
+  # print_simulation(falling_rock, relevant_settled_rocks)
 
 
-  return determine_starting_location(settled_rocks).row - 3
+  return determine_starting_location(relevant_settled_rocks).row - 3
 
 def p2():
   input = open("input.txt", "r")
   return 0
 
-
+start_time = time.time()
 print(p1())
+print("--- %s seconds ---" % (time.time() - start_time))
 print(p2())

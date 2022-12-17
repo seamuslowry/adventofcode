@@ -1,6 +1,4 @@
 from dataclasses import dataclass
-import time
-from pprint import pprint
 from itertools import product
 
 @dataclass

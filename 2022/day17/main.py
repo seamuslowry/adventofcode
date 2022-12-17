@@ -99,15 +99,13 @@ def print_simulation(falling_rock: Rock, settled: list[Rock]) -> None:
   print("    ---------")
 
 
-def p1():
-  input = open("input.txt", "r").read()
-  directions = parse_input(input)
+def simulate(count: int, directions: list[Direction]) -> int:
   relevant_settled_rocks: list[Rock] = []
   settled_count = 0
   tick = 0
   falling_rock = create_rock(tick, determine_starting_location(relevant_settled_rocks))
 
-  while settled_count < 2022:
+  while settled_count < count:
   # while tick < 2:
     # print_simulation(falling_rock, settled_rocks)
     settled_spots: set[Location] = set(spot for rock in relevant_settled_rocks for spot in rock.spots)
@@ -135,6 +133,11 @@ def p1():
 
 
   return determine_starting_location(relevant_settled_rocks).row - 3
+
+
+def p1():
+  input = open("input.txt", "r").read()
+  return simulate(2022, parse_input(input))
 
 def p2():
   input = open("input.txt", "r")

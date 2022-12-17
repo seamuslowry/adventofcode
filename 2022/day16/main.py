@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 import time
 from pprint import pprint
+from itertools import product
 
 @dataclass
 class Valve:
@@ -10,14 +11,15 @@ class Valve:
 
 
 
-known_solutions: dict[tuple[str, str, int], int] = {}
+known_solutions: dict[tuple[str, str, str, int], int] = {}
 
-def opened_to_str(o: set[str]) -> str:
+def valves_to_str(o: set[str]) -> str:
   return "".join(sorted(o))
 
-def depth_limited_search(valves: dict[str, Valve], opened: set[str], current: str, time_remaining: int) -> int:
-
-  existing_solution = known_solutions.get((current, opened_to_str(opened), time_remaining), None)
+def depth_limited_search(valves: dict[str, Valve], opened: set[str], current: str, time_remaining: int, responsibilities: set[str]) -> int:
+  existing_solution = known_solutions.get((current, valves_to_str(opened), valves_to_str(responsibilities), time_remaining), None)
+  if (not responsibilities):
+    return 0
   if (existing_solution):
     return existing_solution
   if (time_remaining <= 0):
@@ -28,10 +30,13 @@ def depth_limited_search(valves: dict[str, Valve], opened: set[str], current: st
 
   released = sum(map(lambda o: valves[o].release, opened))
 
+  if (responsibilities == opened):
+    return released*time_remaining
+
   child_open_total = 0
 
-  if current not in opened:
-    child_open_total = depth_limited_search(valves, opened.union({current}), current, time_remaining - 1)
+  if current not in opened and current in responsibilities:
+    child_open_total = depth_limited_search(valves, opened.union({current}), current, time_remaining - 1, responsibilities)
 
   child_leave_total = 0
 
@@ -39,11 +44,11 @@ def depth_limited_search(valves: dict[str, Valve], opened: set[str], current: st
     if time_remaining - weight <= 0:
       child_leave_total = max((time_remaining - 1) * released, child_leave_total)
     else:
-      child_leave_total = max(released * (weight - 1) + depth_limited_search(valves, opened, identifier, time_remaining - weight), child_leave_total)
+      child_leave_total = max(released * (weight - 1) + depth_limited_search(valves, opened, identifier, time_remaining - weight, responsibilities), child_leave_total)
 
   child_val = max(child_open_total, child_leave_total)
   ret = released + child_val
-  known_solutions[(current, opened_to_str(opened), time_remaining)] = ret
+  known_solutions[(current, valves_to_str(opened), valves_to_str(responsibilities), time_remaining)] = ret
   return ret
 
 def parse_line(l: str) -> Valve:
@@ -79,11 +84,33 @@ def p1():
   start_node = "AA"
   input = open("input.txt", "r").read().splitlines()
   valves = parse_input(input, start_node)
-  return depth_limited_search(valves, set(), start_node, 30)
+  return depth_limited_search(valves, set(), start_node, 30, set(valves.keys()))
 
 def p2():
-  # admit default; slow guess and check
-  return 2556
+  start_node = "AA"
+  input = open("input.txt", "r").read().splitlines()
+  valves = parse_input(input, start_node)
+
+  responsibilities: list[tuple[set[str],set[str]]] = []
+
+  valve_keys = list(filter(lambda k: valves[k].release ,valves.keys()))
+
+  for pattern in product([True,False],repeat=len(valve_keys)):
+    responsibilities.append((set(x[1] for x in zip(pattern,valve_keys) if x[0]),set(x[1] for x in zip(pattern,valve_keys) if not x[0])))
+
+  maximum = 0
+
+  total_resps = len(responsibilities)
+
+  for index, grouping in enumerate(responsibilities):
+    my_responsibilities, elephant_responsibilities = grouping
+    print(f'{index} / {total_resps}: {index / total_resps * 100}%')
+    known_solutions.clear()
+    my_best = depth_limited_search(valves, set(), start_node, 26, my_responsibilities)
+    elephant_best = depth_limited_search(valves, set(), start_node, 26, elephant_responsibilities)
+    maximum = max(maximum, my_best + elephant_best)
+
+  return maximum
 
 print(p1())
 print(p2())

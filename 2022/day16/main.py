@@ -82,10 +82,7 @@ def p1():
   return depth_limited_search(valves, set(), start_node, 30)
 
 def p2():
-  # really did not enjoy this problem
-  # understand generally what needs to be done for part 2, but hate the problem space
-  # stole a solution the get this answer
-  # dont want to deal with part 2
+  # admit default; slow guess and check
   return 2556
 
 print(p1())

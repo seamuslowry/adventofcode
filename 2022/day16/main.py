@@ -86,6 +86,7 @@ def p1():
   valves = parse_input(input, start_node)
   return depth_limited_search(valves, set(), start_node, 30, set(valves.keys()))
 
+# this solution is slow as HELL (1hr+), but it does eventually reach the right answer
 def p2():
   start_node = "AA"
   input = open("input.txt", "r").read().splitlines()

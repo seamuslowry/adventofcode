@@ -1,9 +1,5 @@
 
 from dataclasses import dataclass
-import time
-from itertools import groupby
-from pprint import pprint
-
 
 @dataclass(frozen=True,eq=True)
 class Location:
@@ -158,45 +154,14 @@ def simulate(count: int, directions: list[Direction]) -> int:
         row_spots = list(spot for spot in all_spots if spot.row == row)
         if len(row_spots) == 7:
           relevant_settled_rocks = list(filter(lambda l:l.highest_row >= row - 4, relevant_settled_rocks))
-          pass
 
       # create the next falling rock
       falling_rock = create_rock(settled_count, determine_starting_location(relevant_settled_rocks))
-
-      # print(f'{settled_count}/{count} : {settled_count/count*100}%')
-
-
     else:
       falling_rock.spots = after_down_move
     tick += 1
-  # print_simulation(falling_rock, relevant_settled_rocks)
-
-  # print(f'{settled_count - len(relevant_settled_rocks)} pruned')
-
-  # find_cycles(relevant_settled_rocks, determine_starting_location(relevant_settled_rocks).row)
 
   return determine_starting_location(relevant_settled_rocks).row - 3
-
-
-def test():
-  input = open("input.txt", "r").read()
-  # answer = 0
-  # rocks = 2008
-  # while answer < 3047:
-  #   rocks += 1
-  #   answer =  simulate(rocks, parse_input(input))
-  #   print(f'{rocks}: {answer}')
-
-  
-  parsed = parse_input(input)
-  for n in range(3000, 3010):
-    simulated = simulate(n, parsed)
-    calculated = calculate_height(n, parsed)
-    if simulated != calculated:
-      print(f'n {n}, simulated {simulated}, calculated: {calculated}')
-    else:
-      print(f'{n}: successful calculation')
-    # print(f'{n}: {simulate(n, parse_input(input))}')
 
 def calculate_height(count: int, directions: list[Direction]) -> int:
   if count < 305:

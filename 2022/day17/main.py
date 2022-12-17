@@ -1,6 +1,8 @@
 
 from dataclasses import dataclass
 
+ASSUMED_MIN_CYCLE_LENGTH = 2000 # lower this if no cycles are being found
+
 @dataclass(frozen=True,eq=True)
 class Location:
   row: int
@@ -79,7 +81,7 @@ def determine_starting_location(settled: list[Rock]) -> Location:
   max_row = max(map(lambda r: r.highest_row + 1, settled), default=0)
   return Location(row=max_row + 3, col=2)
 
-def find_cycles(settled: list[Rock], max: int):
+def find_cycles(settled: list[Rock], max: int) -> tuple[int,int]:
   strs: list[str] = []
   settled_spots: set[Location] = set(spot for rock in settled for spot in rock.spots)
   for row in range(max):
@@ -92,12 +94,13 @@ def find_cycles(settled: list[Rock], max: int):
         tmp_str += '.'
     strs.append(tmp_str)
   
-  for x in range(len(strs)):
-    for y in range(x + 2022, (len(strs) - x) // 2):
+  for x in range(len(strs) // 2):
+    for y in range(x + ASSUMED_MIN_CYCLE_LENGTH, (len(strs) - x) // 2):
       sublist = strs[x:y]
       next_sublist = strs[y:2* y - x]
       if sublist == next_sublist:
-        print(f'cycle found at x: {x} y: {y}')
+        return (x,y)
+  return (-1,-1)
 
 
 def print_simulation(falling_rock: Rock, settled: list[Rock]) -> None:
@@ -122,11 +125,13 @@ def print_simulation(falling_rock: Rock, settled: list[Rock]) -> None:
   print("    ---------")
 
 
-def simulate(count: int, directions: list[Direction]) -> int:
+def simulate(count: int, directions: list[Direction], remove_unnecessary: bool = True) -> tuple[dict[int,int],list[Rock]]:
   relevant_settled_rocks: list[Rock] = []
   settled_count = 0
   tick = 0
   falling_rock = create_rock(tick, determine_starting_location(relevant_settled_rocks))
+
+  rocks_to_height: dict[int,int] = {}
 
   while settled_count < count:
     settled_spots: set[Location] = set(spot for rock in relevant_settled_rocks for spot in rock.spots)
@@ -148,40 +153,54 @@ def simulate(count: int, directions: list[Direction]) -> int:
       relevant_settled_rocks.append(falling_rock)
       settled_count += 1
 
-      # prune now unhelpful rocks
-      all_spots = settled_spots.union(falling_rock.spots)
-      for row in falling_rock.rows:
-        row_spots = list(spot for spot in all_spots if spot.row == row)
-        if len(row_spots) == 7:
-          relevant_settled_rocks = list(filter(lambda l:l.highest_row >= row - 4, relevant_settled_rocks))
+      if remove_unnecessary:
+        # prune now unhelpful rocks
+        all_spots = settled_spots.union(falling_rock.spots)
+        for row in falling_rock.rows:
+          row_spots = list(spot for spot in all_spots if spot.row == row)
+          if len(row_spots) == 7:
+            relevant_settled_rocks = list(filter(lambda l:l.highest_row >= row - 4, relevant_settled_rocks))
 
       # create the next falling rock
-      falling_rock = create_rock(settled_count, determine_starting_location(relevant_settled_rocks))
+      starting_location = determine_starting_location(relevant_settled_rocks)
+      falling_rock = create_rock(settled_count, starting_location)
+      rocks_to_height[settled_count] = starting_location.row -3
     else:
       falling_rock.spots = after_down_move
     tick += 1
 
-  return determine_starting_location(relevant_settled_rocks).row - 3
+  return rocks_to_height, relevant_settled_rocks
 
 def calculate_height(count: int, directions: list[Direction]) -> int:
-  if count < 305:
-    return simulate(count, directions)
+  # eat the performance hit every time; cry about it, I am
+  cycle_max_rocks = min(count, 5000)
+  big_list, settled_rocks = simulate(cycle_max_rocks, directions, False)
+  cycle_max_height = max(big_list.values())
+  start_cycle, end_cycle = find_cycles(settled_rocks, cycle_max_height)
+
+  height_before_cycles = start_cycle
+  height_of_cycle = end_cycle - start_cycle
+  rocks_before_cycles = 0
+  rocks_in_cycle = 0
+
+  rocks_at_cycle_start = [r for r,height in big_list.items() if height == start_cycle]
+  rocks_at_cycle_end = [r for r,height in big_list.items() if height == end_cycle]
+
+  for start_rock in rocks_at_cycle_start:
+    for end_rock in rocks_at_cycle_end:
+      rocks_in_cycle_test = end_rock - start_rock
+      start = big_list[start_rock]
+      first_difference = big_list[start_rock + rocks_in_cycle_test]
+      second_difference = big_list[start_rock + rocks_in_cycle_test * 2]
+      if first_difference - start == second_difference - first_difference:
+        rocks_before_cycles = start_rock
+        rocks_in_cycle = rocks_in_cycle_test
+
+  if count in big_list:
+    return big_list[count]
   else:
-    # these numbers were calculated on pen and paper after some work to find cycles within the stacking programatically
-    # I don't know _exactly_ how to calculate them for generic input
-
-    # process to get them was essentially
-    # 1. generate string representations of each row up to several thousand rocks
-    # 2. search that list of row strings for two consecutive sublists with length greater than ~1000 that are exactly equal (should be a cycle)
-    # 3. with knowledge of at what height a cycle starts and ends, can figure out the rest
-
-    height_before_cycles = 465
-    rocks_before_cycles = 305
-    rocks_in_cycle = 1705
-    height_of_cycle = 2582
-
     remainder_analogous_rocks = ((count - rocks_before_cycles) % rocks_in_cycle) + rocks_before_cycles
-    remainder_height = simulate(remainder_analogous_rocks, directions) - height_before_cycles
+    remainder_height = max(simulate(remainder_analogous_rocks, directions)[0].values()) - height_before_cycles
 
     return height_before_cycles + (height_of_cycle * ((count - rocks_before_cycles) // rocks_in_cycle)) + remainder_height
 

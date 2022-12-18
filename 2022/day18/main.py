@@ -48,8 +48,10 @@ def is_enclosed(points: set[Point], point: Point) -> bool: # point passed should
 
   while determine_enclosed_points:
     current_point = determine_enclosed_points.pop()
-    if current_point.x <= x_min or current_point.x >= x_max or current_point.y <= y_min or current_point.y >= y_max or current_point.z <= z_min or current_point.z >= z_max: # reached border
-        return False
+    if (current_point.x <= x_min or current_point.x >= x_max
+        or current_point.y <= y_min or current_point.y >= y_max
+        or current_point.z <= z_min or current_point.z >= z_max):
+      return False
     for adjacent_point in adjacent_points(current_point):
       if adjacent_point not in points and adjacent_point not in visited:
         determine_enclosed_points.add(adjacent_point)

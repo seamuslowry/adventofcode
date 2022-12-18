@@ -25,7 +25,7 @@ def surface_area(points: set[Point], point: Point) -> int:
 
   return 6 - covered
 
-def is_enclosed(points: set[Point], point: Point) -> bool:
+def is_enclosed(points: set[Point], point: Point) -> bool: # point passed should be an empty space
   if point in points:
     return False
 

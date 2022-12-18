@@ -30,7 +30,7 @@ def is_enclosed(points: set[Point], point: Point) -> bool:
     return False
 
   current_point = point
-  possibly_enclosed_points: set[Point] = {current_point}
+  determine_enclosed_points: set[Point] = {current_point}
   visited: set[Point] = {current_point}
 
   # you know what would be a good idea: not recomputing these all the time
@@ -46,13 +46,13 @@ def is_enclosed(points: set[Point], point: Point) -> bool:
   z_min = min(z_vals)
   z_max = max(z_vals)
 
-  while possibly_enclosed_points:
-    current_point = possibly_enclosed_points.pop()
+  while determine_enclosed_points:
+    current_point = determine_enclosed_points.pop()
     if current_point.x <= x_min or current_point.x >= x_max or current_point.y <= y_min or current_point.y >= y_max or current_point.z <= z_min or current_point.z >= z_max: # reached border
         return False
     for adjacent_point in adjacent_points(current_point):
       if adjacent_point not in points and adjacent_point not in visited:
-        possibly_enclosed_points.add(adjacent_point)
+        determine_enclosed_points.add(adjacent_point)
         visited.add(adjacent_point)
   return True
 

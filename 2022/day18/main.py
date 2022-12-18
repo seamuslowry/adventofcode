@@ -19,7 +19,7 @@ def parse_input(lines: list[str]) -> set[Point]:
     vals.add(Point(int(x),int(y),int(z)))
   return vals
 
-def uncovered_sides(points: set[Point], point: Point):
+def surface_area(points: set[Point], point: Point):
   covered = 0
   for mod in [-1,1]:
     covered += int(Point(point.x + mod, point.y, point.z) in points)
@@ -28,16 +28,16 @@ def uncovered_sides(points: set[Point], point: Point):
 
   return 6 - covered
 
-def total_uncovered_sides(points: set[Point]):
+def total_surface_area(points: set[Point]):
   uncovered = 0
   for point in points:
-    uncovered += uncovered_sides(points, point)
+    uncovered += surface_area(points, point)
 
   return uncovered
 
 def p1():
   input = open("input.txt", "r").read().splitlines()
-  return total_uncovered_sides(parse_input(input))
+  return total_surface_area(parse_input(input))
 
 def p2():
   input = open("input.txt", "r")

@@ -7,10 +7,6 @@ class Point:
   y: int
   z: int
 
-  # def __iter__(self):
-  #   return iter(astuple(self))
-
-
 def parse_input(lines: list[str]) -> set[Point]:
   vals: set[Point] = set()
   for line in lines:
@@ -99,8 +95,6 @@ def p2():
   total = total_surface_area(points)
   interior = total_interior_surface_area(points)
   return total - interior
-
-
 
 print(p1())
 print(p2())

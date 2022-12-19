@@ -2,8 +2,9 @@
 from dataclasses import dataclass
 from enum import Enum
 from functools import reduce
-import time
 
+# this is used for types of robots, minerals currently collected, and costs to build robots
+# it's doing a lot and gets confusing, but it's also useful to be able to map between those things
 class Mineral(Enum):
   ORE = 1
   CLAY = 2
@@ -13,7 +14,7 @@ class Mineral(Enum):
 @dataclass
 class Blueprint:
   id: int
-  # first dict is robot type to cost
+  # first dict is robot type to a map representing the cost
   # second dict is type of mineral to number needed to build robot
   costs: dict[Mineral, dict[Mineral, int]]
 

@@ -80,9 +80,6 @@ def print_map(hurricanes: set[Hurricane], rocks: set[Position], max_row: int, ma
       print(print_char[-1] if len(print_char) <= 2 else len(print_char) - 1, end='')
     print('')
 
-known_solutions: dict[tuple[int, Position], int] = {}
-visited: set[tuple[int, Position]] = set()
-
 def shortest_path(current_position: Position, desired_position: Position, hurricanes: set[Hurricane], rocks: set[Position], max_row: int, max_col: int, first_step: int) -> int:
   current_step = first_step
   current_possibilities = {current_position}

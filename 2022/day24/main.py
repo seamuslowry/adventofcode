@@ -64,20 +64,18 @@ def print_map(hurricanes: set[Hurricane], rocks: set[Position], max_row: int, ma
   for row in range(max_row + 1):
     for col in range(max_col + 1):
       position = Position(row=row, col=col)
-      print_char = ''
+      print_char = '.'
       if position in rocks:
         print_char += '#'
-      elif Hurricane(position=position, direction=Direction.UP) in hurricanes:
+      if Hurricane(position=position, direction=Direction.UP) in hurricanes:
         print_char += '^'
-      elif Hurricane(position=position, direction=Direction.RIGHT) in hurricanes:
+      if Hurricane(position=position, direction=Direction.RIGHT) in hurricanes:
         print_char += '>'
-      elif Hurricane(position=position, direction=Direction.LEFT) in hurricanes:
+      if Hurricane(position=position, direction=Direction.LEFT) in hurricanes:
         print_char += '<'
-      elif Hurricane(position=position, direction=Direction.DOWN) in hurricanes:
+      if Hurricane(position=position, direction=Direction.DOWN) in hurricanes:
         print_char += 'v'
-      else:
-        print_char += '.'
-      print(print_char if len(print_char) <= 1 else len(print_char), end='')
+      print(print_char[-1] if len(print_char) <= 2 else len(print_char) - 1, end='')
     print('')
 
 def p1():

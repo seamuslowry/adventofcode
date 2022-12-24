@@ -1,4 +1,3 @@
-from pprint import pprint
 from dataclasses import dataclass
 from enum import Enum
 from typing import Optional
@@ -147,5 +146,5 @@ def p2():
   return round_count
 
 
-pprint(p1())
+print(p1())
 print(p2())

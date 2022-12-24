@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
-from enum import Enum,IntEnum
-from pprint import pprint
+from enum import Enum, IntEnum
 import re
 from typing import Optional
 
@@ -10,19 +9,11 @@ class Movement:
   dr: int
   dc: int
 
-@dataclass
-class FaceData:
-  dr: int
-  dc: int
-
 class Direction(IntEnum):
   RIGHT = 0
   DOWN = 1
   LEFT = 2
   UP = 3
-
-  def __repr__(self):
-    return self.name
 
 MOVEMENTS = {
   Direction.UP: Movement(dr = -1, dc=0),
@@ -46,9 +37,6 @@ class TileType(Enum):
   VOID = 0
   ROCK = 1
   OPEN = 2
-
-  def __repr__(self):
-    return self.name
 
 class Instruction:
   pass
@@ -228,21 +216,21 @@ def p2():
   first_tile = tiles[0].index(TileType.OPEN)
 
   # START NEEDS MODIFICATION BASED ON INPUT (not general)
-  edge_length = 4
-  four = edge_map(get_edge(1,2,Direction.RIGHT, edge_length), list(reversed(get_edge(2, 3, Direction.UP, edge_length))), (Direction.RIGHT, Direction.DOWN))
-  six = edge_map(list(reversed(get_edge(1,0,Direction.DOWN, edge_length))), get_edge(2, 2, Direction.DOWN, edge_length), (Direction.DOWN, Direction.UP))
   # END NEEDS MODIFICATION BASED ON INPUT
+  edge_length = 50
   jump_map = {
-    # **one,
-    # **two,
-    # **three,
-    **four,
-    # **five,
-    **six,
-    # **seven
+    # sample rows (not all input, just all that's necessary) edge_length should be 4
+    # **edge_map(get_edge(1,2,Direction.RIGHT, edge_length), list(reversed(get_edge(2, 3, Direction.UP, edge_length))), (Direction.RIGHT, Direction.DOWN)),
+    # **edge_map(list(reversed(get_edge(1,0,Direction.DOWN, edge_length))), get_edge(2, 2, Direction.DOWN, edge_length), (Direction.DOWN, Direction.UP))
+    # _MY_ real read input; edge length should be 50
+    **edge_map(get_edge(2,0,Direction.UP, edge_length), get_edge(1, 1, Direction.LEFT, edge_length), (Direction.UP, Direction.RIGHT)),
+    **edge_map(get_edge(2,0,Direction.LEFT, edge_length), list(reversed(get_edge(0, 1, Direction.LEFT, edge_length))), (Direction.LEFT, Direction.RIGHT)),
+    **edge_map(get_edge(1,1,Direction.RIGHT, edge_length), get_edge(0, 2, Direction.DOWN, edge_length), (Direction.RIGHT, Direction.UP)),
+    **edge_map(get_edge(2,1,Direction.RIGHT, edge_length), list(reversed(get_edge(0, 2, Direction.RIGHT, edge_length))), (Direction.RIGHT, Direction.LEFT)),
+    **edge_map(get_edge(3,0,Direction.RIGHT, edge_length), get_edge(2, 1, Direction.DOWN, edge_length), (Direction.RIGHT, Direction.UP)),
+    **edge_map(get_edge(3,0,Direction.LEFT, edge_length), get_edge(0, 1, Direction.UP, edge_length), (Direction.LEFT, Direction.DOWN)),
+    **edge_map(get_edge(3,0,Direction.DOWN, edge_length), get_edge(0, 2, Direction.UP, edge_length), (Direction.DOWN, Direction.DOWN)),
   }
-
-  # pprint(jump_map)
 
   map = FlatMap(tiles, Position(row=0,col=first_tile, direction=Direction.RIGHT), jump_map)
 

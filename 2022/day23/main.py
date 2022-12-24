@@ -13,10 +13,12 @@ class Position:
   row: int
   col: int
 
+
 def play_round(round_number: int, starting_positions: set[Position]) -> set[Position]:
   proposal_direction = Direction(round_number % len(Direction))
 
   return set()
+
 
 def parse_input(map: str) -> set[Position]:
   ret = set()

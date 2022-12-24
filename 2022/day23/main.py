@@ -133,8 +133,18 @@ def p1():
 
 
 def p2():
-  input = open("input.txt", "r")
-  return 0
+  input = open("input.txt", "r").read()
+  old_positions = None
+  positions = parse_input(input)
+
+  round_count = 0
+
+  while old_positions != positions:
+    old_positions = positions
+    positions = play_round(round_count, positions)
+    round_count += 1
+
+  return round_count
 
 
 pprint(p1())

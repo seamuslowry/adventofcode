@@ -6,6 +6,7 @@ class Direction(Enum):
   DOWN = 1
   LEFT = 2
   RIGHT = 3
+  NONE = 4
 
 @dataclass
 class Movement:
@@ -17,6 +18,7 @@ MOVEMENTS = {
   Direction.DOWN: Movement(dr=1,dc=0),
   Direction.LEFT: Movement(dr=0,dc=-1),
   Direction.RIGHT: Movement(dr=0,dc=1),
+  Direction.NONE: Movement(dr=0,dc=0)
 }
 
 @dataclass(eq=True, frozen=True)
@@ -78,6 +80,22 @@ def print_map(hurricanes: set[Hurricane], rocks: set[Position], max_row: int, ma
       print(print_char[-1] if len(print_char) <= 2 else len(print_char) - 1, end='')
     print('')
 
+known_solutions: dict[tuple[int, Position], int] = {}
+visited: set[tuple[int, Position]] = set()
+
+def shortest_path(current_position: Position, desired_position: Position, hurricanes: set[Hurricane], rocks: set[Position], max_row: int, max_col: int, first_step: int) -> int:
+  current_step = first_step
+  current_possibilities = {current_position}
+
+
+  while desired_position not in current_possibilities:
+    current_step += 1
+    current_hurricane_positions = set(map(lambda h: h.position, hurricanes_at_step(current_step, hurricanes, max_row=max_row, max_col=max_col)))
+    all_possibilities = { Position(row = position.row + movement.dr, col = position.col + movement.dc) for movement in MOVEMENTS.values() for position in current_possibilities }
+    current_possibilities = all_possibilities - rocks - current_hurricane_positions
+
+  return current_step
+
 def p1():
   input = open("input.txt", "r").read().splitlines()
   hurricanes, initial_rocks = parse_input(input)
@@ -94,18 +112,27 @@ def p1():
   max_row = max(initial_rocks, key=lambda r: r.row).row
   max_col = max(initial_rocks, key=lambda r: r.col).col
 
-  for step in range(10):
-    print(f'at step {step}')
-    print_map(hurricanes_at_step(step, hurricanes, max_row=max_row, max_col=max_col), rocks, max_row=max_row, max_col=max_col)
-    print('\n')
-
-
-  return 0
+  return shortest_path(start_position, end_position, hurricanes, rocks, max_row, max_col, 0)
 
 def p2():
-  input = open("input.txt", "r")
-  return 0
+  input = open("input.txt", "r").read().splitlines()
+  hurricanes, initial_rocks = parse_input(input)
 
+  start_position = Position(row=0,col=1)
+  end_position = Position(row=len(input) - 1, col = len(input[0]) - 2)
+
+  # ensure you can't move up past the start or down past the end by blocking them with rocks
+  rocks = initial_rocks.union({
+    Position(row=start_position.row - 1, col=start_position.col),
+    Position(row=end_position.row + 1, col=end_position.col)
+  })
+
+  max_row = max(initial_rocks, key=lambda r: r.row).row
+  max_col = max(initial_rocks, key=lambda r: r.col).col
+
+  first_trip = shortest_path(start_position, end_position, hurricanes, rocks, max_row, max_col, 0)
+  second_trip = shortest_path(end_position, start_position, hurricanes, rocks, max_row, max_col, first_trip)
+  return shortest_path(start_position, end_position, hurricanes, rocks, max_row, max_col, second_trip)
 
 print(p1())
 print(p2())

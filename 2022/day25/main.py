@@ -37,17 +37,10 @@ def decimal_to_snafu(original_num: int) -> str:
 
   return ret[::-1]
 
-
-
 def p1():
   input = open("input.txt", "r").read().splitlines()
   dec_sum = sum(snafu_to_decimal(l) for l in input)
   return decimal_to_snafu(dec_sum)
 
-def p2():
-  input = open("input.txt", "r")
-  return 0
-
 
 print(p1())
-print(p2())
